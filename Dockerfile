@@ -20,7 +20,7 @@ RUN echo 'server {\n\
         try_files $uri $uri/ =404;\n\
     }\n\
     location /websockify {\n\
-        proxy_pass http://127.0.0.1:6080;\n\
+        proxy_pass http://127.0.0;\n\
         proxy_http_version 1.1;\n\
         proxy_set_header Upgrade $http_upgrade;\n\
         proxy_set_header Connection "Upgrade";\n\
