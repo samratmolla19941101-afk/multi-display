@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# প্রয়োজনীয় গ্রাফিকাল ও ওয়েব প্রক্সি টুলস ইন্সটল করা
+# প্রয়োজনীয় সব টুলস ও Nginx ইন্সটল করা
 RUN apt-get update && apt-get install -y \
     xvfb \
     x11vnc \
@@ -12,10 +12,7 @@ RUN apt-get update && apt-get install -y \
     fluxbox \
     && rm -rf /var/lib/apt/lists/*
 
-# NoVNC এর ডিফল্ট ওয়েব ইন্টারফেস লিংক ফিক্স
-RUN ln -s /usr/share/novnc/vnc.html /usr/share/novnc/index.html
-
-# Nginx কনফিগারেশন (পোর্ট ৮০ থেকে অভ্যন্তরীণ ৬০৮০ নোভিএনসি পোর্টে রিডাইরেক্ট)
+# Nginx কনফিগারেশন সেটআপ (ডিফল্ট পেজ এড়াতে সরাসরি নোভিএনসি রুটে প্রক্সি করা)
 RUN echo 'server {\n\
     listen 80;\n\
     location /screen1/ {\n\
@@ -52,13 +49,13 @@ RUN echo 'server {\n\
 
 EXPOSE 80
 
-# ১টি আল্ট্রা-ওয়াইড মনিটর চালু করে নোভিএনসি দিয়ে ব্রডকাস্ট করা
+# ১টি আল্ট্রা-ওয়াইড মনিটর চালু করে সরাসরি /usr/share/novnc/ থেকে সার্ভিস রান করা
 CMD Xvfb :1 -screen 0 6400x720x16 & \
     sleep 2 && \
     fluxbox -display :1 & \
     sleep 2 && \
     x11vnc -display :1 -shared -forever -rfbport 5901 -nopw & \
     sleep 2 && \
-    /usr/share/novnc/utils/launch.sh --vnc 127.0.0.1:5901 --listen 6080 & \
+    /usr/share/novnc/utils/launch.sh --vnc 127.0.0.1:5901 --listen 6080 --web /usr/share/novnc & \
     sleep 2 && \
     nginx -g "daemon off;"
