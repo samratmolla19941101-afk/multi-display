@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# প্রয়োজনীয় সব টুলস ও Nginx ইন্সটল করা
+# প্রয়োজনীয় সব গ্রাফিকাল ও ওয়েব টুলস ইন্সটল করা
 RUN apt-get update && apt-get install -y \
     xvfb \
     x11vnc \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     fluxbox \
     && rm -rf /var/lib/apt/lists/*
 
-# Nginx কনফিগারেশন সেটআপ (ডিফল্ট পেজ এড়াতে সরাসরি নোভিএনসি রুটে প্রক্সি করা)
+# Nginx কনফিগারেশন সেটআপ (১টি নোভিএনসি পোর্ট ৬০৮০-কে ৫টি ভিন্ন লিংকে ফরোয়ার্ড করা)
 RUN echo 'server {\n\
     listen 80;\n\
     location /screen1/ {\n\
@@ -49,7 +49,7 @@ RUN echo 'server {\n\
 
 EXPOSE 80
 
-# ১টি আল্ট্রা-ওয়াইড মনিটর চালু করে সরাসরি /usr/share/novnc/ থেকে সার্ভিস রান করা
+# ১টি বিশাল আল্ট্রা-ওয়াইড ফ্রেমবাফার এবং নোভিএনসি ব্যাকগ্রাউন্ডে চালু করা
 CMD Xvfb :1 -screen 0 6400x720x16 & \
     sleep 2 && \
     fluxbox -display :1 & \
